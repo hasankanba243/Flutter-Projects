@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1052584781367",
+    "project_id": "tebbyprojects-73237",
+    "storage_bucket": "tebbyprojects-73237.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1052584781367:android:f896f9c9b71642c24441b2",
+        "android_client_info": {
+          "package_name": "com.example.todoapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7eEKmA-y8412I0IVpY2sO7jgBAY0LAh0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1052584781367:android:c05b3ca173de57834441b2",
+        "android_client_info": {
+          "package_name": "com.example.wallpaper"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7eEKmA-y8412I0IVpY2sO7jgBAY0LAh0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
