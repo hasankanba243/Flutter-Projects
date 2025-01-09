@@ -44,6 +44,9 @@ dependencies:
   google_fonts: ^5.1.0
   flutter_native_splash:
   google_sign_in:
+  supabase_flutter:
+  image_picker:
+  cached_network_image:
 dev_dependencies:
   flutter_test:
     sdk: flutter
