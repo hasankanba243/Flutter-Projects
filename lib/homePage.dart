@@ -1,9 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wallpaper/loginPage.dart';
+import 'package:wallpaper/addpage.dart';
 
 class homePage extends StatefulWidget {
   const homePage({super.key});
@@ -15,45 +14,119 @@ class homePage extends StatefulWidget {
 class _homePageState extends State<homePage> {
   bool pg = false;
 
-  void checkpg() {
-    FirebaseFirestore.instance
-        .collection("Users")
-        .doc(FirebaseAuth.instance.currentUser?.uid)
-        .get()
-        .then((value) {
-      setState(() {
-        pg = value["pg"];
-      });
-    });
-  }
-
-  @override
-  void initState() {
-    checkpg();
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Center(
-          child: ElevatedButton(
-            onPressed: () async {
-              SharedPreferences prefs = await SharedPreferences.getInstance();
-              prefs.clear();
-              Navigator.of(context).pop();
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => loginPage(),
-              ));
-            },
-            child: Text("Logout"),
-          ),
-        ),
-        floatingActionButton: pg
-            ? FloatingActionButton(
-                onPressed: () {},
-                child: Icon(Icons.add),
-              )
-            : SizedBox());
+      appBar: AppBar(
+        title: Text("Walls By Node"),
+      ),
+      body: Center(
+          child: StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection("WallsTheme")
+            .where("visible", isEqualTo: true)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            if (snapshot.data!.size < 0) {
+              return Center(
+                child: Text("No Data Found"),
+              );
+            } else {
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(20, 10, 10, 0),
+                child: GridView(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      childAspectRatio: 1 / 1.3),
+                  children: snapshot.data!.docs.map((sdata) {
+                    return Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(14),
+                          child: Container(
+                            width: MediaQuery.of(context).size.width,
+                            height: 300,
+                            color: Colors.blue,
+                            child: CachedNetworkImage(
+                              imageUrl: sdata["imgurl"],
+                              fit: BoxFit.cover,
+                              width: MediaQuery.of(context).size.width,
+                              height: 300,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(13, 3, 0, 8),
+                          child: Chip(
+                              label: Icon(
+                            sdata["amount"] > 0
+                                ? Icons.currency_rupee
+                                : Icons.download_outlined,
+                            size: 14,
+                          )),
+                        )
+                      ],
+                    );
+                  }).toList(),
+                ),
+              );
+            }
+          } else {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
+      )),
+      floatingActionButton: StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection("Users")
+            .doc(FirebaseAuth.instance.currentUser?.uid)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return SizedBox(); // Optional: Add a loading indicator
+          }
+
+          if (snapshot.hasError) {
+            return SizedBox(); // Optional: Handle error state
+          }
+
+          // Check if snapshot has data and `pg` exists
+          if (snapshot.hasData && snapshot.data!.data() != null) {
+            var data = snapshot.data!.data() as Map<String, dynamic>;
+            bool pg = data["pg"] ?? false;
+
+            return pg
+                ? FloatingActionButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => addpage(),
+                      ));
+                    },
+                    child: Icon(Icons.add),
+                  )
+                : SizedBox();
+          }
+
+          return SizedBox();
+        },
+      ),
+    );
   }
 }
+
+// ElevatedButton(
+//             onPressed: () async {
+//               SharedPreferences prefs = await SharedPreferences.getInstance();
+//               prefs.clear();
+//               Navigator.of(context).pop();
+//               Navigator.of(context).push(MaterialPageRoute(
+//                 builder: (context) => loginPage(),
+//               ));
+//             },
+//             child: Text("Logout"),
+//           ),
