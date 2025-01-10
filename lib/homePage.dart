@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:wallpaper/addpage.dart';
+import 'package:wallpaper/userWalls.dart';
 
 class homePage extends StatefulWidget {
   const homePage({super.key});
@@ -13,12 +14,35 @@ class homePage extends StatefulWidget {
 
 class _homePageState extends State<homePage> {
   bool pg = false;
+  List menuitems = ["Profile", "My Wallpapers"];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Walls By Node"),
+        iconTheme: IconThemeData(color: Colors.white),
+        actions: [
+          PopupMenuButton(onSelected: (value) {
+            switch (value) {
+              case "profile":
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => addpage(),
+                ));
+                break;
+              case "mywalls":
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => userWalls(),
+                ));
+                break;
+            }
+          }, itemBuilder: (context) {
+            return [
+              PopupMenuItem(child: Text("Profile"), value: "profile"),
+              PopupMenuItem(child: Text("My Wallpapers"), value: "mywalls"),
+            ];
+          })
+        ],
       ),
       body: Center(
           child: StreamBuilder(

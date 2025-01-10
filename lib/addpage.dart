@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -51,7 +52,7 @@ class _addpageState extends State<addpage> {
 
   Future<void> uploadImage() async {
     await Supabase.instance.client.storage.from("Kanba Images").upload(
-          "${title.text}${DateTime.now().year}${DateTime.now().month}${DateTime.now().day}",
+          "${title.text.replaceAll(" ", "")}${DateTime.now().year}${DateTime.now().month}${DateTime.now().day}",
           File(_img!.path),
         );
     var url = await Supabase.instance.client.storage
@@ -64,15 +65,19 @@ class _addpageState extends State<addpage> {
       "imgurl": url,
       "date": DateTime.now(),
       "amount": int.parse(amount.text),
-      "visible":true
+      "visible": true,
+      "uid": FirebaseAuth.instance.currentUser!.uid
     }).then((value) {
       setState(() {
         _img = null;
         desc.text = "";
         title.text = "";
         amount.text = "";
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("Image Uploaded"),),);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Image Uploaded"),
+          ),
+        );
       });
     });
   }
